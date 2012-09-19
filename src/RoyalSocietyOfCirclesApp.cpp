@@ -1,5 +1,6 @@
 #include "cinder/app/AppBasic.h"
 #include "cinder/gl/gl.h"
+#include "Node.h"
 
 using namespace ci;
 using namespace ci::app;
@@ -7,6 +8,7 @@ using namespace std;
 
 class RoyalSocietyOfCirclesApp : public AppBasic {
   public:
+	Node* sentinel;
 	void setup();
 	void mouseDown( MouseEvent event );	
 	void update();
@@ -15,6 +17,7 @@ class RoyalSocietyOfCirclesApp : public AppBasic {
 
 void RoyalSocietyOfCirclesApp::setup()
 {
+	sentinel = new Node();
 }
 
 void RoyalSocietyOfCirclesApp::mouseDown( MouseEvent event )
