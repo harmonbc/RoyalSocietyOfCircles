@@ -28,20 +28,20 @@ void RoyalSocietyOfCirclesApp::setup()
 void RoyalSocietyOfCirclesApp::mouseDown( MouseEvent event )
 {
 	console() << event.getPos() << endl;
-	Node* temp = sentinel_-> next_node_;
-	while(temp!=sentinel_)
-	{
-		//Circle* tempCirc = temp -> circle_;
-		//(*tempCirc).isInCircle(Vec2f(event.getX(), event.getY()));
-		temp = temp->next_node_;
-	}
-	delete temp;
 }
 
 void RoyalSocietyOfCirclesApp::update()
 {
-
-
+	Node* temp = sentinel_->next_node_;
+	while(temp!=sentinel_)
+	{
+		Vec2f orig = (*temp).circle_->pos_;
+		orig.x = orig.x+5;
+		orig.y = orig.y-5;
+		(*temp).circle_->pos_ = orig;
+		temp = temp->next_node_;
+	}
+	temp;
 }
 
 void RoyalSocietyOfCirclesApp::draw()
