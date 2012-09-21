@@ -10,7 +10,9 @@ public:
 	Circle* circle_;
 
 	void insertAfter(Node* insertAfter, Circle* data);
+	void insertAfter(Node* insertAfter, Node* curNode);
 	void insertBefore(Node* insertBefore, Circle* data);
-	void draw();
+	void draw(int frameCount);
 	void update();
+	void removeNode(Node* nodeToRemove);
 };

@@ -7,9 +7,10 @@ Circle::Circle(Vec2f pos, float radius)
 	pos_ = pos;
 	radius_ = radius;
 
+	traveling_ = true;
+	cur_pos_ = Vec2f(0,0);
 	color_ = Color8u(255,255,255);
 	cur_col_ = COLOR_WHITE;
-	frozen_= true;
 }
 bool Circle::isInCircle(Vec2f click)
 {
@@ -17,10 +18,22 @@ bool Circle::isInCircle(Vec2f click)
 
 	if(distance<radius_)
 	{
-		changeLightColor();
 		return true;
 	} 
 	return false;
+}
+void Circle::update()
+{
+	if(traveling_)
+	{
+		if(cur_pos_.x!=pos_.x)
+		cur_pos_.x += pos_.x/50;
+		if(cur_pos_.y!=pos_.y)
+		cur_pos_.y += pos_.y/50;
+
+		if(cur_pos_.distance(pos_)<10)
+		cur_pos_ = pos_;
+	}
 }
 void Circle::changeLightColor()
 {
