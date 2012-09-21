@@ -148,10 +148,10 @@ Node* RoyalSocietyOfCirclesApp::getTopNode(MouseEvent event)
 }
 void RoyalSocietyOfCirclesApp::help(){
 	Font master_font_ = Font("Helvetica",15);
-	string txt = "APPLE BANNANA YUM";
+	string txt = "WELCOME TO LIGHT BRIGHT!";
 	TextBox tbox = TextBox().alignment( TextBox::LEFT ).font(master_font_).size( Vec2f( 1024, 1024) ).text( txt );
-	tbox.setColor( Color( 1.0f, 0.65f, 0.35f ) );
-	tbox.setBackgroundColor( ColorA( 0.5, 0, 0, 1 ) );
+	tbox.setColor(Color8u(0, 0, 0) );
+	tbox.setBackgroundColor( Color8u( 255, 255, 255) );
 	Vec2i sz = tbox.measure();
 	console() << "Height: " << sz.y << endl;
 	master_texture_font_ = gl::Texture( tbox.render() );
