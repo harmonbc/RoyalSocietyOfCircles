@@ -27,22 +27,18 @@ void Circle::update()
 	if(traveling_)
 	{
 		if(cur_pos_.x!=pos_.x)
-		cur_pos_.x += pos_.x/50;
+			cur_pos_.x += pos_.x/50;
 		if(cur_pos_.y!=pos_.y)
-		cur_pos_.y += pos_.y/50;
+			cur_pos_.y += pos_.y/50;
 
 		if(cur_pos_.distance(pos_)<10)
-		cur_pos_ = pos_;
+			cur_pos_ = pos_;
 	}
 }
 void Circle::changeLightColor()
 {
 	switch(cur_col_)
 	{
-	case COLOR_BLACK:
-		cur_col_ = COLOR_WHITE;
-		color_ = WHITE;
-		break;
 	case COLOR_RED:
 		cur_col_ = COLOR_ORANGE;
 		color_ = ORANGE;
@@ -63,13 +59,16 @@ void Circle::changeLightColor()
 		cur_col_ = COLOR_VIOLET;
 		color_ = VIOLET;
 		break;
+	case COLOR_VIOLET:
+		cur_col_ = COLOR_WHITE;
+		color_ = WHITE;
 	case COLOR_WHITE:
 		cur_col_ = COLOR_RED;
 		color_ = RED;
 		break;
 	default:
-		cur_col_ = COLOR_BLACK;
-		color_ = BLACK;
+		cur_col_ = COLOR_WHITE;
+		color_ = WHITE;
 		break;
 	}
 

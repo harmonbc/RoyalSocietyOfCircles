@@ -6,7 +6,6 @@
 #define GREEN Color8u(0,255,0);
 #define BLUE Color8u(0,0,255);
 #define VIOLET Color8u(255,0,255);
-#define BLACK Color8u(0,0,0);
 #define WHITE Color8u(255,255,255);
 
 using namespace ci;
@@ -24,9 +23,9 @@ public:
 	bool isInCircle(Vec2f click);
 	void changeLightColor();
 	float getRadius();
+
 	static enum LightColor
 	{
-		COLOR_BLACK,
 		COLOR_RED,
 		COLOR_ORANGE,
 		COLOR_YELLOW,
