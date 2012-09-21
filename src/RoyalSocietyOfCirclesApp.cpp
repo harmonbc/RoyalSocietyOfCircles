@@ -1,6 +1,7 @@
 #include "cinder/app/AppBasic.h"
 #include "cinder/gl/gl.h"
 #include "Node.h"
+#include <time.h>
 
 
 using namespace ci;
@@ -8,40 +9,63 @@ using namespace ci::app;
 using namespace std;
 
 class RoyalSocietyOfCirclesApp : public AppBasic {
-  public:
+public:
 	Node* sentinel_;
 	void setup();
 	void mouseDown( MouseEvent event );	
 	void update();
 	void draw();
+	void prepareSettings(Settings* settings);
 };
+
+static const int kAppWidth=800;
+static const int kAppHeight=600;
+static const float kCircleRadius= 10;
+static const int kCircleDistance= 25;
+static const int kTextureSize=1024;
+static int frame_count_;
+void RoyalSocietyOfCirclesApp::prepareSettings(Settings* settings)
+{
+	(*settings).setWindowSize(kAppWidth,kAppHeight);
+	(*settings).setResizable(false);
+}
 
 void RoyalSocietyOfCirclesApp::setup()
 {
 	sentinel_ = new Node();
-	Circle* c = new Circle(Vec2f(300,400), 60.0f, Color8u(255,0,0));
-	(*sentinel_).insertAfter(sentinel_, c);
-	Circle* d = new Circle(Vec2f(200,400), 60.0f, Color8u(255,255,0));
-	(*sentinel_).insertAfter(sentinel_, d);
+	frame_count_ = 0;
 }
 
 void RoyalSocietyOfCirclesApp::mouseDown( MouseEvent event )
 {
-	console() << event.getPos() << endl;
+	Node* temp = sentinel_->next_node_;
+	Vec2f curClick = Vec2f(event.getX(), event.getY());
+	bool changedColor = false;
+
+	while(temp!=sentinel_)
+	{
+		Circle* circ = temp->circle_;
+		changedColor = (*circ).isInCircle(curClick);
+		temp = temp->next_node_;
+	}
+	if(!changedColor)
+	{
+		Circle* c = new Circle(curClick, kCircleRadius);
+		(*sentinel_).insertAfter(sentinel_, c);
+	}
 }
 
 void RoyalSocietyOfCirclesApp::update()
 {
 	Node* temp = sentinel_->next_node_;
-	while(temp!=sentinel_)
+	/*while(temp!=sentinel_)
 	{
 		Vec2f orig = (*temp).circle_->pos_;
 		orig.x = orig.x+5;
 		orig.y = orig.y-5;
 		(*temp).circle_->pos_ = orig;
 		temp = temp->next_node_;
-	}
-	temp;
+	}*/
 }
 
 void RoyalSocietyOfCirclesApp::draw()
@@ -54,7 +78,8 @@ void RoyalSocietyOfCirclesApp::draw()
 		(*temp).draw();
 		temp = temp->next_node_;
 	}
-	temp;
+	frame_count_++;
+	console() << frame_count_++ << endl;
 }
 
 CINDER_APP_BASIC( RoyalSocietyOfCirclesApp, RendererGl )
