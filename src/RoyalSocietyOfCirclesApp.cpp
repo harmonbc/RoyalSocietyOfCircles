@@ -35,7 +35,7 @@ private:
 	Node* getTopNode(MouseEvent event);
 	void clearAllNodes();
 	void help();
-	void blastColors();
+	void drawHoles();
 	gl::Texture master_texture_font_;
 };
 
@@ -62,9 +62,11 @@ void RoyalSocietyOfCirclesApp::setup()
 	frame_count_ = 0;
 	help();
 	gl::enableAlphaBlending();
-
-
-	bool even = true;
+	drawHoles();
+}
+void RoyalSocietyOfCirclesApp::drawHoles()
+{
+		bool even = true;
 	for(int y = 1; y < kAppHeight-150; y++)
 	{
 		if(y%kCircleDistance==0)
@@ -84,7 +86,6 @@ void RoyalSocietyOfCirclesApp::keyDown(KeyEvent event)
 {
 	if(event.getChar() == '1') clearAllNodes();
 	if(event.getChar() == '?') help_screen = !(help_screen);
-	if(event.getChar() == 'e') blastColors();
 }
 void RoyalSocietyOfCirclesApp::clearAllNodes()
 {
@@ -97,12 +98,13 @@ void RoyalSocietyOfCirclesApp::clearAllNodes()
 		curNode = temp;
 	}
 }
+
 void RoyalSocietyOfCirclesApp::mouseDown( MouseEvent event )
 {
 	if(event.isLeft()) editBoard(event);
-	if(event.isRight()) bringToFront(event);
-	if(event.isMiddle()) removeLight(event);
+	if(event.isRight()) removeLight(event);
 }
+
 void RoyalSocietyOfCirclesApp::removeLight(MouseEvent event)
 {
 	Node* highestInside = getTopNode(event);
@@ -110,15 +112,6 @@ void RoyalSocietyOfCirclesApp::removeLight(MouseEvent event)
 	{
 		(*highestInside).removeNode(highestInside);
 		delete highestInside;
-	}
-}
-void RoyalSocietyOfCirclesApp::bringToFront(MouseEvent event)
-{
-	Node* highestInside = getTopNode(event);
-	if(highestInside!=NULL)
-	{
-		(*highestInside).removeNode(highestInside);
-		(*highestInside).insertAfter(sentinel_, highestInside);
 	}
 }
 void RoyalSocietyOfCirclesApp::editBoard(MouseEvent event)
@@ -136,24 +129,7 @@ void RoyalSocietyOfCirclesApp::editBoard(MouseEvent event)
 		temp = temp -> next_;
 	}	
 }
-void RoyalSocietyOfCirclesApp::blastColors()
-{
-	for(int y = 1; y < kAppHeight; y++)
-	{
-		if(y%20 == 0)
-		{
-			for(int x = 1; x < kAppWidth; x++)
-			{
-				if(x%20 ==0)
-				{
-					Circle* c = new Circle(Vec2f(x, y), kCircleRadius, currentColor);
-					(*sentinel_).insertAfter(sentinel_, c);
-				}
 
-			}
-		}
-	}
-}
 Node* RoyalSocietyOfCirclesApp::getTopNode(MouseEvent event)
 {
 	Node* temp = sentinel_->prev_node_;
@@ -208,6 +184,7 @@ void RoyalSocietyOfCirclesApp::draw()
 	console() << frame_count_++ << endl;
 	if (help_screen)
 		gl::draw(master_texture_font_);
+	
 }
 
 CINDER_APP_BASIC( RoyalSocietyOfCirclesApp, RendererGl )
