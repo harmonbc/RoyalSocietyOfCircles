@@ -14,7 +14,6 @@ Circle::Circle(Vec2f pos, float radius, Color8u c)
 bool Circle::isInCircle(Vec2f click)
 {
 	int distance = click.distance(pos_);
-
 	if(distance<radius_)
 	{
 		return true;
