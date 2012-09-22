@@ -36,10 +36,12 @@ void ColorCards::insertBefore(ColorCards* beforeThis, Vec2f pos, Color8u color)
 	temp -> next_ -> prev_ = temp;
 
 }
-void ColorCards::cycleDeck(ColorCards* sentinel)
+void ColorCards::cycleDeck(ColorCards* sentinel, int noOfCards)
 {
 	ColorCards* temp = sentinel -> next_;
 	sentinel -> next_ = temp -> next_;
+	temp ->pos_.x = temp ->pos_.x-noOfCards;
+	temp ->pos_.y = temp ->pos_.y+noOfCards;
 
 	temp ->next_ = temp -> prev_;
 	temp ->next_ = sentinel;

@@ -15,6 +15,6 @@ class ColorCards
 	void draw();
 	void insertAfter(ColorCards* afterThis, Vec2f pos, Color8u color);
 	void insertBefore(ColorCards* beforeThis, Vec2f pos, Color8u color);
-	void cycleDeck(ColorCards* sentinel);
+	void cycleDeck(ColorCards* sentinel, int noOfCards);
 	void remove(ColorCards* thisCard);
 };

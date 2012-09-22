@@ -2,6 +2,7 @@
 #include "cinder/gl/gl.h"
 #include "Node.h"
 #include "Hole.h"
+#include "ColorCards.h"
 #include "cinder/Text.h"
 #include "cinder/gl/Texture.h"
 
@@ -29,6 +30,7 @@ public:
 private:
 	Node* sentinel_;
 	Hole* sentinel_hole_;
+	ColorCards* sentinel_card_;
 	void editBoard(MouseEvent event);
 	void bringToFront(MouseEvent event);
 	void removeLight(MouseEvent event);
@@ -58,7 +60,7 @@ void RoyalSocietyOfCirclesApp::setup()
 {
 	sentinel_ = new Node();
 	sentinel_hole_ = new Hole();
-	help_screen = true;
+	help_screen = false;
 	frame_count_ = 0;
 	help();
 	gl::enableAlphaBlending();
@@ -184,6 +186,8 @@ void RoyalSocietyOfCirclesApp::draw()
 	console() << frame_count_++ << endl;
 	if (help_screen)
 		gl::draw(master_texture_font_);
+	Rectf rect(200, 200, 200+50, 200+60);
+	gl::drawSolidRect(rect);
 	
 }
 
