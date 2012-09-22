@@ -47,6 +47,9 @@
     <ClInclude Include="..\include\ColorCards.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="..\include\LightColors.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Resources.rc">

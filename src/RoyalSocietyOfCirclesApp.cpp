@@ -2,18 +2,19 @@
 #include "cinder/gl/gl.h"
 #include "Node.h"
 #include "Hole.h"
+#include "LightColors.h"
 #include "ColorCards.h"
 #include "cinder/Text.h"
 #include "cinder/gl/Texture.h"
 
-#define RED Color8u(255,0,0);
-#define ORANGE Color8u(255,127,0);
-#define YELLOW Color8u(255,255,0);
-#define GREEN Color8u(0,255,0);
-#define BLUE Color8u(0,0,255);
-#define VIOLET Color8u(255,0,255);
-#define WHITE Color8u(255,255,255);
-#define GRAY Color8u(211,211,211);
+#define RED		Color8u(255,0,0);
+#define ORANGE	Color8u(255,127,0);
+#define YELLOW	Color8u(255,255,0);
+#define GREEN	Color8u(0,255,0);
+#define BLUE	Color8u(0,0,255);
+#define VIOLET	Color8u(255,0,255);
+#define WHITE	Color8u(255,255,255);
+#define GRAY	Color8u(211,211,211);
 
 using namespace ci;
 using namespace ci::app;
@@ -28,28 +29,39 @@ public:
 	void prepareSettings(Settings* settings);
 	void keyDown(KeyEvent event);
 private:
+	//Lists
 	Node* sentinel_;
 	Hole* sentinel_hole_;
 	ColorCards* sentinel_card_;
+
+	//Actions
 	void editBoard(MouseEvent event);
 	void bringToFront(MouseEvent event);
 	void removeLight(MouseEvent event);
-	Node* getTopNode(MouseEvent event);
 	void clearAllNodes();
+
+	//Helpers
 	void help();
+	void addCards();
+	Node* getTopNode(MouseEvent event);
 	void drawHoles();
+	void setCurrentColor();
+	Color8u returnColor(LightColors c);
+	Color8u returnColor(int c);
 	gl::Texture master_texture_font_;
 };
-
 static const int kAppWidth=800;
 static const int kAppHeight=600;
+static const int kBottomBuffer=150;
 static const float kCircleRadius= 8;
 static const int kCircleDistance= 20;
 static const int kTextureSize=1024;
-static Color8u currentColor = WHITE;
+
+static Color8u cur_color_;
 static int frame_count_;
 static bool help_screen;
 
+/**Executes before program starts*/
 void RoyalSocietyOfCirclesApp::prepareSettings(Settings* settings)
 {
 	(*settings).setWindowSize(kAppWidth,kAppHeight);
@@ -59,17 +71,23 @@ void RoyalSocietyOfCirclesApp::prepareSettings(Settings* settings)
 void RoyalSocietyOfCirclesApp::setup()
 {
 	sentinel_ = new Node();
+	sentinel_card_ = new ColorCards();
 	sentinel_hole_ = new Hole();
 	help_screen = false;
-	frame_count_ = 0;
+
 	help();
 	gl::enableAlphaBlending();
 	drawHoles();
+	addCards();
+	setCurrentColor();
+
+	frame_count_ = 0;
 }
+/**Helper methods for program start up**/
 void RoyalSocietyOfCirclesApp::drawHoles()
 {
-		bool even = true;
-	for(int y = 1; y < kAppHeight-150; y++)
+	bool even = true;
+	for(int y = 1; y < kAppHeight-kBottomBuffer; y++)
 	{
 		if(y%kCircleDistance==0)
 		{
@@ -82,13 +100,47 @@ void RoyalSocietyOfCirclesApp::drawHoles()
 			even = !(even);
 		}
 	}
-
 }
+void RoyalSocietyOfCirclesApp::addCards()
+{
+	int maxCardWidth = (kAppWidth/LAST);
+	int cardBuffer = 5;
+
+	for(int i = COLOR_RED; i != LAST ; i++)
+	{
+		(*sentinel_card_).insertBefore(sentinel_card_, maxCardWidth*i+cardBuffer, kAppHeight-kBottomBuffer+30,
+			maxCardWidth*i+maxCardWidth-cardBuffer, kAppHeight-30, returnColor(i));
+	}
+	console() <<"finished making cards"<<endl;
+}
+void RoyalSocietyOfCirclesApp::help(){
+	Font master_font_ = Font("Helvetica",15);
+	string txt = "WELCOME TO LIGHT BRIGHT!";
+	TextBox tbox = TextBox().alignment( TextBox::LEFT ).font(master_font_).size( Vec2f( 1024, 1024) ).text( txt );
+	tbox.setColor(Color8u(0, 0, 0) );
+	tbox.setBackgroundColor( Color8u( 255, 255, 255) );
+	Vec2i sz = tbox.measure();
+	master_texture_font_ = gl::Texture( tbox.render() );
+}
+
+/**Listens for Actions**/
 void RoyalSocietyOfCirclesApp::keyDown(KeyEvent event)
 {
 	if(event.getChar() == '1') clearAllNodes();
-	if(event.getChar() == '?') help_screen = !(help_screen);
+	if(event.getChar() == '?') help_screen = !(help_screen); 
+	if(event.getChar() == 'n')
+	{
+		(*sentinel_card_).cycleDeck(sentinel_card_);
+		setCurrentColor();
+	}
 }
+void RoyalSocietyOfCirclesApp::mouseDown( MouseEvent event )
+{
+	if(event.isLeft()) editBoard(event);
+	if(event.isRight()) removeLight(event);
+}
+
+/**Performs user actions**/
 void RoyalSocietyOfCirclesApp::clearAllNodes()
 {
 	Node* curNode = sentinel_->next_node_;
@@ -99,12 +151,6 @@ void RoyalSocietyOfCirclesApp::clearAllNodes()
 		(*curNode).removeNode(curNode);
 		curNode = temp;
 	}
-}
-
-void RoyalSocietyOfCirclesApp::mouseDown( MouseEvent event )
-{
-	if(event.isLeft()) editBoard(event);
-	if(event.isRight()) removeLight(event);
 }
 
 void RoyalSocietyOfCirclesApp::removeLight(MouseEvent event)
@@ -124,7 +170,7 @@ void RoyalSocietyOfCirclesApp::editBoard(MouseEvent event)
 	{
 		if((*temp).isInsideHole(Vec2f(event.getX(), event.getY())))
 		{
-			Circle* c = new Circle(Vec2f((*temp).pos_.x,(*temp).pos_.y), kCircleRadius, currentColor);
+			Circle* c = new Circle(Vec2f((*temp).pos_.x,(*temp).pos_.y), kCircleRadius, sentinel_card_->next_->color_);
 			(*sentinel_).insertAfter(sentinel_, c);
 			break;
 		}
@@ -151,15 +197,40 @@ Node* RoyalSocietyOfCirclesApp::getTopNode(MouseEvent event)
 	}
 	return highestInside;
 }
-void RoyalSocietyOfCirclesApp::help(){
-	Font master_font_ = Font("Helvetica",15);
-	string txt = "WELCOME TO LIGHT BRIGHT!";
-	TextBox tbox = TextBox().alignment( TextBox::LEFT ).font(master_font_).size( Vec2f( 1024, 1024) ).text( txt );
-	tbox.setColor(Color8u(0, 0, 0) );
-	tbox.setBackgroundColor( Color8u( 255, 255, 255) );
-	Vec2i sz = tbox.measure();
-	master_texture_font_ = gl::Texture( tbox.render() );
+
+Color8u RoyalSocietyOfCirclesApp::returnColor(LightColors c)
+{
+	switch(c)
+	{
+	case COLOR_RED: return RED; break;
+	case COLOR_ORANGE: return ORANGE; break;
+	case COLOR_YELLOW: return YELLOW; break;
+	case COLOR_GREEN: return GREEN; break;
+	case COLOR_BLUE: return BLUE; break;
+	case COLOR_VIOLET: return VIOLET; break;
+	case COLOR_WHITE: return WHITE; break;
+	default: return GRAY; break;
+	}
 }
+void RoyalSocietyOfCirclesApp::setCurrentColor()
+{
+	cur_color_ = sentinel_card_ -> next_ -> color_;
+}
+Color8u RoyalSocietyOfCirclesApp::returnColor(int c)
+{
+	switch(c)
+	{
+	case COLOR_RED: return RED; break;
+	case COLOR_ORANGE: return ORANGE; break;
+	case COLOR_YELLOW: return YELLOW; break;
+	case COLOR_GREEN: return GREEN; break;
+	case COLOR_BLUE: return BLUE; break;
+	case COLOR_VIOLET: return VIOLET; break;
+	case COLOR_WHITE: return WHITE; break;
+	default: return GRAY; break;
+	}
+}
+
 void RoyalSocietyOfCirclesApp::update()
 {
 }
@@ -182,13 +253,22 @@ void RoyalSocietyOfCirclesApp::draw()
 		(*temp).draw(frame_count_);
 		temp = temp->prev_node_;
 	}
+	ColorCards* temp3 = sentinel_card_ ->next_;
+	temp3 -> top_ = true;
+
+	while(temp3!=sentinel_card_)
+	{
+		(*temp3).draw();
+		temp3 = temp3 -> next_;
+		temp3 -> top_ = false;
+	}
+
 	frame_count_++;
+	
 	console() << frame_count_++ << endl;
+	
 	if (help_screen)
 		gl::draw(master_texture_font_);
-	Rectf rect(200, 200, 200+50, 200+60);
-	gl::drawSolidRect(rect);
-	
 }
 
 CINDER_APP_BASIC( RoyalSocietyOfCirclesApp, RendererGl )
