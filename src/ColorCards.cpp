@@ -40,6 +40,7 @@ void ColorCards::cycleDeck(ColorCards* sentinel, int noOfCards)
 {
 	ColorCards* temp = sentinel -> next_;
 	sentinel -> next_ = temp -> next_;
+
 	temp ->pos_.x = temp ->pos_.x-noOfCards;
 	temp ->pos_.y = temp ->pos_.y+noOfCards;
 
@@ -48,4 +49,11 @@ void ColorCards::cycleDeck(ColorCards* sentinel, int noOfCards)
 
 	sentinel -> prev_ -> next_ = temp;
 	sentinel -> prev_ = temp;
+
+	while(temp != sentinel)
+	{
+		temp ->pos_.x = temp ->pos_.x+1;
+		temp ->pos_.y = temp ->pos_.y-1;
+		temp = temp -> prev_;
+	}
 }
