@@ -105,11 +105,13 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\src\Circle.cpp" />
+    <ClCompile Include="..\src\Hole.cpp" />
     <ClCompile Include="..\src\Node.cpp" />
     <ClCompile Include="..\src\RoyalSocietyOfCirclesApp.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\include\Circle.h" />
+    <ClInclude Include="..\include\Hole.h" />
     <ClInclude Include="..\include\Node.h" />
     <ClInclude Include="..\include\Resources.h" />
   </ItemGroup>

@@ -47,7 +47,7 @@ void Node::draw(int frameCount)
 {
 	Color8u temp = circle_->color_;
 	gl::color(ColorA(temp.r, temp.g, temp.b, .25f));
-	gl::drawSolidCircle(circle_->cur_pos_, circle_->radius_+(sin(frameCount+.0)*3));
+	gl::drawSolidCircle(circle_->cur_pos_, circle_->radius_+(sin(frameCount*.1+.0)*1));
 	gl::color(ColorA(temp.r, temp.g, temp.b, .5f));
 	gl::drawSolidCircle(circle_->cur_pos_, circle_->radius_*.75);
 	gl::color(ColorA(temp.r, temp.g, temp.b, .5f));

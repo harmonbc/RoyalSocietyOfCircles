@@ -1,9 +1,18 @@
 #include "cinder/app/AppBasic.h"
 #include "cinder/gl/gl.h"
 #include "Node.h"
+#include "Hole.h"
 #include "cinder/Text.h"
 #include "cinder/gl/Texture.h"
 
+#define RED Color8u(255,0,0);
+#define ORANGE Color8u(255,127,0);
+#define YELLOW Color8u(255,255,0);
+#define GREEN Color8u(0,255,0);
+#define BLUE Color8u(0,0,255);
+#define VIOLET Color8u(255,0,255);
+#define WHITE Color8u(255,255,255);
+#define GRAY Color8u(211,211,211);
 
 using namespace ci;
 using namespace ci::app;
@@ -19,6 +28,7 @@ public:
 	void keyDown(KeyEvent event);
 private:
 	Node* sentinel_;
+	Hole* sentinel_hole_;
 	void editBoard(MouseEvent event);
 	void bringToFront(MouseEvent event);
 	void removeLight(MouseEvent event);
@@ -32,11 +42,11 @@ private:
 static const int kAppWidth=800;
 static const int kAppHeight=600;
 static const float kCircleRadius= 8;
-static const int kCircleDistance= 12;
+static const int kCircleDistance= 20;
 static const int kTextureSize=1024;
+static Color8u currentColor = WHITE;
 static int frame_count_;
 static bool help_screen;
-static bool twinkle;
 
 void RoyalSocietyOfCirclesApp::prepareSettings(Settings* settings)
 {
@@ -47,18 +57,34 @@ void RoyalSocietyOfCirclesApp::prepareSettings(Settings* settings)
 void RoyalSocietyOfCirclesApp::setup()
 {
 	sentinel_ = new Node();
+	sentinel_hole_ = new Hole();
 	help_screen = true;
-	twinkle = false;
 	frame_count_ = 0;
 	help();
 	gl::enableAlphaBlending();
+
+
+	bool even = true;
+	for(int y = 1; y < kAppHeight; y++)
+	{
+		if(y%kCircleDistance==0)
+		{
+			for(int x = 1 ; x < kAppWidth; x++){
+				if(x%kCircleDistance==0)
+				{
+					(*sentinel_hole_).insertAfter(sentinel_hole_, Vec2f((even) ? x : x+(kCircleDistance/2),y), kCircleRadius);
+				}
+			}
+			even = !(even);
+		}
+	}
+
 }
 void RoyalSocietyOfCirclesApp::keyDown(KeyEvent event)
 {
 	if(event.getChar() == '1') clearAllNodes();
 	if(event.getChar() == '?') help_screen = !(help_screen);
 	if(event.getChar() == 'e') blastColors();
-	if(event.getChar() == 's') twinkle = !(twinkle);
 }
 void RoyalSocietyOfCirclesApp::clearAllNodes()
 {
@@ -97,17 +123,18 @@ void RoyalSocietyOfCirclesApp::bringToFront(MouseEvent event)
 }
 void RoyalSocietyOfCirclesApp::editBoard(MouseEvent event)
 {
-	Node* highestInside = getTopNode(event);
-	if(highestInside==NULL)
+	Hole* temp = sentinel_hole_->next_;
+	Hole* highest= NULL;
+	while(temp!=sentinel_hole_)
 	{
-		Circle* c = new Circle(Vec2f(event.getX(), event.getY()), kCircleRadius);
-		(*sentinel_).insertAfter(sentinel_, c);
-	}
-	else
-	{
-		Circle* circ = highestInside->circle_;
-		(*circ).changeLightColor();
-	}
+		if((*temp).isInsideHole(Vec2f(event.getX(), event.getY())))
+		{
+			Circle* c = new Circle(Vec2f((*temp).pos_.x,(*temp).pos_.y), kCircleRadius, currentColor);
+			(*sentinel_).insertAfter(sentinel_, c);
+			break;
+		}
+		temp = temp -> next_;
+	}	
 }
 void RoyalSocietyOfCirclesApp::blastColors()
 {
@@ -119,7 +146,7 @@ void RoyalSocietyOfCirclesApp::blastColors()
 			{
 				if(x%20 ==0)
 				{
-					Circle* c = new Circle(Vec2f(x, y), kCircleRadius);
+					Circle* c = new Circle(Vec2f(x, y), kCircleRadius, currentColor);
 					(*sentinel_).insertAfter(sentinel_, c);
 				}
 
@@ -153,7 +180,6 @@ void RoyalSocietyOfCirclesApp::help(){
 	tbox.setColor(Color8u(0, 0, 0) );
 	tbox.setBackgroundColor( Color8u( 255, 255, 255) );
 	Vec2i sz = tbox.measure();
-	console() << "Height: " << sz.y << endl;
 	master_texture_font_ = gl::Texture( tbox.render() );
 }
 void RoyalSocietyOfCirclesApp::update()
@@ -165,11 +191,16 @@ void RoyalSocietyOfCirclesApp::draw()
 	// clear out the window with black
 	gl::clear( Color( 0, 0, 0 ) );
 	Node* temp = sentinel_->prev_node_;
+	Hole* temp2 = sentinel_hole_->prev_;
+	while(temp2 != sentinel_hole_)
+	{
+		(*temp2).draw();
+		temp2 = temp2->prev_;
+	}
 	while(temp!=sentinel_)
 	{
 		Circle* c = temp->circle_;
 		(*c).update();
-		if(twinkle&&rand()%3==0) (*c).changeLightColor();
 		(*temp).draw(frame_count_);
 		temp = temp->prev_node_;
 	}
