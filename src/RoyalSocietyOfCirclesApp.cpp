@@ -65,7 +65,7 @@ void RoyalSocietyOfCirclesApp::setup()
 
 
 	bool even = true;
-	for(int y = 1; y < kAppHeight; y++)
+	for(int y = 1; y < kAppHeight-150; y++)
 	{
 		if(y%kCircleDistance==0)
 		{
