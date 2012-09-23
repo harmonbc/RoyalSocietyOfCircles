@@ -176,7 +176,7 @@ void RoyalSocietyOfCirclesApp::mouseDown( MouseEvent event )
 {
 	if(event.isLeft()&&event.getY()<kAppHeight-kBottomBuffer) editBoard(event);
 	else if(event.isLeft()) checkCards(event);
-	if(event.isRight()) removeLight(event);
+	else if(event.isRight()) removeLight(event);
 }
 
 /**Performs user actions**/
@@ -187,7 +187,7 @@ void RoyalSocietyOfCirclesApp::clearAllNodes()
 	while(curNode!=sentinel_)
 	{
 		temp = curNode ->next_node_;
-		(*curNode).removeNode(curNode);
+		removeNode(curNode);
 		curNode = temp;
 	}
 }
@@ -211,7 +211,7 @@ void RoyalSocietyOfCirclesApp::removeLight(MouseEvent event)
 	Node* highestInside = getTopNode(event);
 	if(highestInside!=NULL)
 	{
-		(*highestInside).removeNode(highestInside);
+		removeNode(highestInside);
 		delete highestInside;
 	}
 }
@@ -224,7 +224,7 @@ void RoyalSocietyOfCirclesApp::editBoard(MouseEvent event)
 		if((*temp).isInsideHole(Vec2f(event.getX(), event.getY())))
 		{
 			Circle* c = new Circle(Vec2f((*temp).pos_.x,(*temp).pos_.y), kCircleRadius, sentinel_card_->next_->color_);
-			(*sentinel_).insertAfter(sentinel_, c);
+			insertAfter(sentinel_, c);
 			break;
 		}
 		temp = temp -> next_;

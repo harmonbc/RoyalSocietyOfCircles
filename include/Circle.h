@@ -16,10 +16,10 @@ using namespace ci;
 class Circle
 {
 public:
-	Circle(Vec2f pos, float radius, Color8u c);
+	Circle(Vec2f pos, int radius, Color8u c);
 
 	Vec2f pos_;
-	float radius_;
+	int radius_;
 	Color8u color_;
 };
 

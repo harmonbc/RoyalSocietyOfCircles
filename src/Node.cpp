@@ -18,7 +18,17 @@ Node::Node()
 	circle_ = NULL;
 }
 
-void Node::insertAfter(Node* insertAfter, Circle* data)
+void Node::draw(int frameCount)
+{
+	Color8u temp = circle_->color_;
+	gl::color(ColorA(temp.r, temp.g, temp.b, .25f));
+	gl::drawSolidCircle(circle_->pos_, circle_->radius_-5+frameCount%5);
+	gl::color(temp);
+	gl::drawSolidCircle(circle_->pos_, circle_->radius_/2);
+}
+
+//Static
+void insertAfter(Node* insertAfter, Circle* data)
 {
 	Node* temp = new Node();
 
@@ -30,7 +40,7 @@ void Node::insertAfter(Node* insertAfter, Circle* data)
 	temp->next_node_->prev_node_ = temp;
 }
 
-void Node::insertAfter(Node* insertAfter, Node* curNode)
+void insertAfter(Node* insertAfter, Node* curNode)
 {
 
 	curNode->next_node_ = insertAfter->next_node_;
@@ -40,7 +50,7 @@ void Node::insertAfter(Node* insertAfter, Node* curNode)
 	curNode->next_node_->prev_node_ = curNode;
 }
 
-void Node::insertBefore(Node* insertBefore, Circle* data)
+void insertBefore(Node* insertBefore, Circle* data)
 {
 	Node* temp = new Node();
 
@@ -51,7 +61,7 @@ void Node::insertBefore(Node* insertBefore, Circle* data)
 	temp->prev_node_->next_node_= temp;
 }
 
-void Node::removeNode(Node* nodeToRemove)
+void removeNode(Node* nodeToRemove)
 {
 	nodeToRemove->prev_node_->next_node_ = nodeToRemove->next_node_;
 	nodeToRemove->next_node_->prev_node_ = nodeToRemove->prev_node_;
@@ -59,11 +69,3 @@ void Node::removeNode(Node* nodeToRemove)
 	delete nodeToRemove;
 }
 
-void Node::draw(int frameCount)
-{
-	Color8u temp = circle_->color_;
-	gl::color(ColorA(temp.r, temp.g, temp.b, .25f));
-	gl::drawSolidCircle(circle_->pos_, circle_->radius_-5+frameCount%5);
-	gl::color(temp);
-	gl::drawSolidCircle(circle_->pos_, circle_->radius_/2);
-}

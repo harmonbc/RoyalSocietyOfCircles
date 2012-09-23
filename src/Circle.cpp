@@ -12,7 +12,7 @@
 #include "Circle.h"
 #include "Node.h"
 
-Circle::Circle(Vec2f pos, float radius, Color8u c)
+Circle::Circle(Vec2f pos, int radius, Color8u c)
 {
 	pos_ = pos;
 	radius_ = radius;
