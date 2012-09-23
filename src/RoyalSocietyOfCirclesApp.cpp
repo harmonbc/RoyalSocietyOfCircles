@@ -35,7 +35,6 @@ public:
 private:
 	//Lists
 	Node*			sentinel_;
-	Hole*			sentinel_hole_;
 	ColorCards*		sentinel_card_;
 
 	//Actions from mouse/keboard methods
@@ -92,7 +91,6 @@ void RoyalSocietyOfCirclesApp::setup()
 {
 	sentinel_ = new Node();
 	sentinel_card_ = new ColorCards();
-	sentinel_hole_ = new Hole();
 	help_screen = false;
 
 	gl::enableAlphaBlending();
@@ -118,7 +116,9 @@ void RoyalSocietyOfCirclesApp::drawHoles()
 			for(int x = 1 ; x < kAppWidth; x++){
 				if(x%kCircleDistance==0)
 				{
-					(*sentinel_hole_).insertAfter(sentinel_hole_, Vec2f((even) ? x : x+(kCircleDistance/2),y), kCircleRadius);
+					Circle* c = new Circle(Vec2f(x,y),kCircleRadius, Color8u(0,0,0));
+					insertAfter(sentinel_, c);
+					sentinel_->next_node_->is_hole_ = true;
 				}
 			}
 			even = !(even);
@@ -298,23 +298,13 @@ void RoyalSocietyOfCirclesApp::draw()
 	gl::clear(Color( 0, 0, 0 ));
 
 	Node* temp = sentinel_->prev_node_;
-	Hole* temp2 = sentinel_hole_->prev_;
 	ColorCards* temp3 = sentinel_card_ ->next_;
 
-	while(temp2 != sentinel_hole_)
-	{
-		(*temp2).draw();
-		temp2 = temp2->prev_;
-	}
-
-	temp2 = NULL;
 	while(temp!=sentinel_)
 	{
 		(*temp).draw(frame_count_);
 		temp = temp->prev_node_;
 	}
-
-	temp = NULL;
 
 	int pos = 0;
 

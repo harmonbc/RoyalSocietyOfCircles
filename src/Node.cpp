@@ -16,6 +16,7 @@ Node::Node()
 {
 	next_node_ = prev_node_ = this;
 	circle_ = NULL;
+	is_hole_ = false;
 }
 
 void Node::draw(int frameCount)

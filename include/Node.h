@@ -19,7 +19,7 @@ public:
 	Node* next_node_;
 	Node* prev_node_;
 	Circle* circle_;
-
+	bool is_hole_ ;
 
 	void draw(int frameCount);
 	void update();
