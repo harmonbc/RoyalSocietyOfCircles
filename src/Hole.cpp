@@ -62,5 +62,5 @@ bool Hole::isInsideHole(ci::Vec2f click)
 void Hole::draw()
 {
 	ci::gl::color(ci::Color8u(90,90,90));
-	ci::gl::drawSolidCircle(pos_, radius_);
+	ci::gl::drawStrokedCircle(pos_, radius_);
 }

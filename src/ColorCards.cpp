@@ -19,17 +19,13 @@ ColorCards::ColorCards()
 void ColorCards::draw()
 {
 	gl::color(color_);
-	Rectf rect(upper_left_x, (top_) ? upper_left_y-10 : upper_left_y, bottom_right_x, (top_) ? bottom_right_y+10 : bottom_right_y);
+	Rectf rect(upper_left_x, upper_left_y, bottom_right_x, bottom_right_y);
 	gl::drawSolidRect(rect);
 }
 
-void ColorCards::insertAfter(ColorCards* afterThis, int ulx, int uly, int brx, int bry, Color8u color)
+void insertAfter(ColorCards* afterThis, Color8u color)
 {
 	ColorCards* temp = new ColorCards();
-	temp -> upper_left_x = ulx;
-	temp -> upper_left_y = uly;
-	temp -> bottom_right_x = brx;
-	temp -> bottom_right_y = bry;
 	temp -> color_ = color;
 
 	temp -> next_ = afterThis ->next_;
@@ -38,7 +34,8 @@ void ColorCards::insertAfter(ColorCards* afterThis, int ulx, int uly, int brx, i
 	temp -> next_ -> prev_ = temp;
 	temp -> prev_ -> next_ = temp;
 }
-void ColorCards::insertAfter(ColorCards* afterThis, ColorCards* thisCard)
+
+void insertAfter(ColorCards* afterThis, ColorCards* thisCard)
 {
 	afterThis -> next_ -> prev_ = thisCard;
 
@@ -48,13 +45,9 @@ void ColorCards::insertAfter(ColorCards* afterThis, ColorCards* thisCard)
 	afterThis -> next_ = thisCard;
 }
 
-void ColorCards::insertBefore(ColorCards* beforeThis, int ulx, int uly, int brx, int bry, Color8u color)
+void insertBefore(ColorCards* beforeThis, Color8u color)
 {
 	ColorCards* temp = new ColorCards();
-	temp -> upper_left_x = ulx;
-	temp -> upper_left_y = uly;
-	temp -> bottom_right_x = brx;
-	temp -> bottom_right_y = bry;
 	temp -> color_ = color;
 
 	temp -> next_ = beforeThis;
@@ -64,10 +57,11 @@ void ColorCards::insertBefore(ColorCards* beforeThis, int ulx, int uly, int brx,
 	temp -> next_ -> prev_ = temp;
 
 }
-void ColorCards::reverseList(ColorCards* sentinel)
+void reverseList(ColorCards* sentinel)
 {
 	ColorCards* temp = sentinel;
 	ColorCards* temp2 = NULL;
+
 	do{
 		temp2 = temp->next_;
 		temp->next_ = temp->prev_;
@@ -76,7 +70,8 @@ void ColorCards::reverseList(ColorCards* sentinel)
 	}while(temp!=sentinel);
 
 }
-void ColorCards::cycleDeck(ColorCards* sentinel)
+
+void cycleDeck(ColorCards* sentinel)
 {
 	ColorCards* temp = sentinel -> next_;
 	sentinel -> next_ = temp -> next_;
@@ -90,11 +85,12 @@ void ColorCards::cycleDeck(ColorCards* sentinel)
 	temp -> prev_ -> next_ = temp;
 }
 
-void ColorCards::remove(ColorCards* removeThis)
+void remove(ColorCards* removeThis)
 {
 	removeThis -> prev_ -> next_ = removeThis -> next_;
 	removeThis -> next_ -> prev_ = removeThis -> prev_;
 }
+
 bool ColorCards::isInside(Vec2f click)
 {
 	if(click.x>upper_left_x&&click.x<bottom_right_x&&click.y>upper_left_y&&bottom_right_y)

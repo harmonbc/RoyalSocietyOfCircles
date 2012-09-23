@@ -1,3 +1,4 @@
+#pragma once
 /**
 *@Author: Brandon Harmon
 *@Date: 24 September, 2012
@@ -9,6 +10,6 @@
 *give attribution. Commercial uses are allowed.
 **/
 static enum LightColors {
-	COLOR_RED, COLOR_ORANGE, COLOR_YELLOW, COLOR_GREEN,
-	COLOR_BLUE, COLOR_VIOLET,COLOR_WHITE, COLOR_GRAY, LAST
+	COLOR_RED, COLOR_YELLOW, COLOR_GREEN,
+	COLOR_BLUE, COLOR_VIOLET,COLOR_WHITE, LAST
 };

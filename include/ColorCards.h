@@ -28,11 +28,11 @@ public:
 	bool top_;
 
 	void draw();
-	void insertAfter(ColorCards* afterThis, int ulx, int uly, int brx, int bry, Color8u color);
+	bool isInside(Vec2f click);
+};
+	void insertAfter(ColorCards* afterThis,Color8u color);
 	void insertAfter(ColorCards* afterThis, ColorCards* thisCard);
-	void insertBefore(ColorCards* beforeThis, int ulx, int uly, int brx, int bry, Color8u color);
+	void insertBefore(ColorCards* beforeThis, Color8u color);
 	void cycleDeck(ColorCards* sentinel);
 	void reverseList(ColorCards* sentinel);
 	void remove(ColorCards* thisCard);
-	bool isInside(Vec2f click);
-};

@@ -8,6 +8,7 @@
 *which means you are free to use, share, and remix it as long as you
 *give attribution. Commercial uses are allowed.
 **/
+
 #include "cinder/CinderResources.h"
 #include "cinder/app/AppBasic.h"
 #include "cinder/gl/gl.h"
@@ -24,54 +25,61 @@ using namespace std;
 
 class RoyalSocietyOfCirclesApp : public AppBasic {
 public:
-	void setup();
-	void mouseDown( MouseEvent event );	
-	void update();
-	void draw();
-	void prepareSettings(Settings* settings);
-	void keyDown(KeyEvent event);
+	//Used by Cinder
+	void			setup();
+	void			mouseDown( MouseEvent event );	
+	void			update();
+	void			draw();
+	void			prepareSettings(Settings* settings);
+	void			keyDown(KeyEvent event);
 private:
 	//Lists
-	Node* sentinel_;
-	Hole* sentinel_hole_;
-	ColorCards* sentinel_card_;
+	Node*			sentinel_;
+	Hole*			sentinel_hole_;
+	ColorCards*		sentinel_card_;
 
-	//Actions
-	void editBoard(MouseEvent event);
-	void bringToFront(MouseEvent event);
-	void removeLight(MouseEvent event);
-	void clearAllNodes();
+	//Actions from mouse/keboard methods
+	void			editBoard(MouseEvent event);
+	void			checkCards(MouseEvent event);
+	void			bringToFront(MouseEvent event);
+	void			removeLight(MouseEvent event);
+	void			clearAllNodes();
 
-	//Helpers
-	void help();
-	void addCards();
-	Node* getTopNode(MouseEvent event);
-	void drawHoles();
-	void setCurrentColor();
-	Color8u returnColor(LightColors c);
-	Color8u returnColor(int c);
-	gl::Texture master_texture_font_;
+	//Assist Setup/Actions methods
+	void			addCards();
+	Node*			getTopNode(MouseEvent event);
+	void			drawHoles();
+	void			setCurrentColor();
+	Color8u			returnColor(LightColors c);
+	Color8u			returnColor(int c);
+
+	//Help Menu
+	void			render();
+	gl::Texture		mTextTexture;
+	Vec2f			mSize;
+	Font			mFont;
 };
 
-#define RED		Color8u(255,0,0);
-#define ORANGE	Color8u(255,127,0);
-#define YELLOW	Color8u(255,255,0);
-#define GREEN	Color8u(0,255,0);
-#define BLUE	Color8u(0,0,255);
-#define VIOLET	Color8u(255,0,255);
-#define WHITE	Color8u(255,255,255);
-#define GRAY	Color8u(211,211,211);
+#define RED			Color8u(255,0,0);
+#define YELLOW		Color8u(255,255,0);
+#define GREEN		Color8u(0,255,0);
+#define BLUE		Color8u(0,0,255);
+#define VIOLET		Color8u(255,0,255);
+#define WHITE		Color8u(255,255,255);
 
-static const int kAppWidth=800;
-static const int kAppHeight=600;
-static const int kBottomBuffer=150;
-static const float kCircleRadius= 8;
-static const int kCircleDistance= 20;
-static const int kTextureSize=1024;
+static const int	kAppWidth=800;
+static const int	kAppHeight=600;
+static const int	kBottomBuffer=150;
+static const float	kCircleRadius= 8;
+static const int	kCircleDistance= 20;
+static const int	kTextureSize=1024;
+static const int 	kMaxCardWidth = (kAppWidth/LAST);
+static const int	kCardBuffer = 5;
 
-static Color8u cur_color_;
-static int frame_count_;
-static bool help_screen;
+static	Color8u		cur_color_;
+static int			frame_count_;
+static bool			help_screen;
+static bool			cards_have_changed_;
 
 /**Executes before program starts*/
 void RoyalSocietyOfCirclesApp::prepareSettings(Settings* settings)
@@ -87,11 +95,15 @@ void RoyalSocietyOfCirclesApp::setup()
 	sentinel_hole_ = new Hole();
 	help_screen = false;
 
-	help();
 	gl::enableAlphaBlending();
 	drawHoles();
 	addCards();
 	setCurrentColor();
+
+	mFont = Font( "Times New Roman", 20 );
+	mSize = Vec2f( kAppWidth, 100 );
+	render();
+	cards_have_changed_ = true;
 
 	frame_count_ = 0;
 }
@@ -120,36 +132,50 @@ void RoyalSocietyOfCirclesApp::addCards()
 
 	for(int i = COLOR_RED; i != LAST ; i++)
 	{
-		(*sentinel_card_).insertBefore(sentinel_card_, maxCardWidth*i+cardBuffer, kAppHeight-kBottomBuffer+30,
-			maxCardWidth*i+maxCardWidth-cardBuffer, kAppHeight-30, returnColor(i));
+		insertBefore(sentinel_card_, returnColor(i));
 	}
-	console() <<"finished making cards"<<endl;
+	cards_have_changed_ = true;
 }
-void RoyalSocietyOfCirclesApp::help(){
-	Font master_font_ = Font("Helvetica",15);
-	string txt = "WELCOME TO LIGHT BRIGHT!";
-	TextBox tbox = TextBox().alignment( TextBox::LEFT ).font(master_font_).size( Vec2f( 1024, 1024) ).text( txt );
-	tbox.setColor(Color8u(0, 0, 0) );
-	tbox.setBackgroundColor( Color8u( 255, 255, 255) );
+/**
+*Code primarily taken from Cinder example
+**/
+void RoyalSocietyOfCirclesApp::render()
+{
+	string txt = "LITE BRITE:\nLeft Click inside of a grey circle to add a light";
+	txt+="\nSelect color either by left clicking on a card or pressing 'n' to cycle through cards\n";
+	txt+="\nRemove light by right clicking it";
+	txt+="\nc=Clears all lights from the board";
+	txt+="\nn=Cycle through colors";
+	txt+="\nr=Reverse the list of colors";
+	txt+="\n?=Toggle Help Screen\n";
+	TextBox tbox = TextBox().alignment( TextBox::RIGHT ).font( mFont ).size( Vec2i( mSize.x, TextBox::GROW ) ).text( txt );
+	tbox.setColor( Color8u(0,0,0) );
+	tbox.setBackgroundColor( Color8u(255,255,255) );
 	Vec2i sz = tbox.measure();
-	master_texture_font_ = gl::Texture( tbox.render() );
+	mTextTexture = gl::Texture( tbox.render() );
 }
 
 /**Listens for Actions**/
 void RoyalSocietyOfCirclesApp::keyDown(KeyEvent event)
 {
-	if(event.getChar() == '1') clearAllNodes();
+	if(event.getChar() == 'c') clearAllNodes();
 	else if(event.getChar() == '?') help_screen = !(help_screen); 
 	else if(event.getChar() == 'n')
 	{
-		(*sentinel_card_).cycleDeck(sentinel_card_);
+		cycleDeck(sentinel_card_);
 		setCurrentColor();
+		cards_have_changed_ = true;
 	}
-	else if(event.getChar() == 'r') (*sentinel_card_).reverseList(sentinel_card_); 
+	else if(event.getChar() == 'r')
+	{
+		reverseList(sentinel_card_); 
+		cards_have_changed_ = true;
+	}
 }
 void RoyalSocietyOfCirclesApp::mouseDown( MouseEvent event )
 {
-	if(event.isLeft()) editBoard(event);
+	if(event.isLeft()&&event.getY()<kAppHeight-kBottomBuffer) editBoard(event);
+	else if(event.isLeft()) checkCards(event);
 	if(event.isRight()) removeLight(event);
 }
 
@@ -165,7 +191,21 @@ void RoyalSocietyOfCirclesApp::clearAllNodes()
 		curNode = temp;
 	}
 }
-
+void RoyalSocietyOfCirclesApp::checkCards(MouseEvent event)
+{
+	ColorCards* temp2 = sentinel_card_->next_;
+	while(temp2!=sentinel_card_)
+	{
+		if((*temp2).isInside(Vec2f(event.getX(), event.getY())))
+		{
+			remove(temp2);
+			insertAfter(sentinel_card_, temp2);
+			cards_have_changed_ = true;
+			break;
+		}
+		temp2 = temp2 -> next_;
+	}
+}
 void RoyalSocietyOfCirclesApp::removeLight(MouseEvent event)
 {
 	Node* highestInside = getTopNode(event);
@@ -175,6 +215,7 @@ void RoyalSocietyOfCirclesApp::removeLight(MouseEvent event)
 		delete highestInside;
 	}
 }
+
 void RoyalSocietyOfCirclesApp::editBoard(MouseEvent event)
 {
 	Hole* temp = sentinel_hole_->next_;
@@ -188,17 +229,7 @@ void RoyalSocietyOfCirclesApp::editBoard(MouseEvent event)
 		}
 		temp = temp -> next_;
 	}
-		ColorCards* temp2 = sentinel_card_ -> next_;
-		while(temp2!=sentinel_card_)
-		{
-			if((*temp2).isInside(Vec2f(event.getX(), event.getY())))
-			{
-				(*temp2).remove(temp2);
-				(*sentinel_card_).insertAfter(sentinel_card_, temp2);
-				break;
-			}
-			temp2 = temp2 -> next_;
-		}
+	ColorCards* temp2 = sentinel_card_ -> next_;
 
 }
 
@@ -212,7 +243,8 @@ Node* RoyalSocietyOfCirclesApp::getTopNode(MouseEvent event)
 	while(temp!=sentinel_)
 	{
 		circ = temp->circle_;
-		isInside = (*circ).isInCircle(curClick);
+		isInside = isInCircle(circ, curClick);
+
 		if(isInside)
 		{
 			highestInside = temp;
@@ -227,33 +259,34 @@ Color8u RoyalSocietyOfCirclesApp::returnColor(LightColors c)
 	switch(c)
 	{
 	case COLOR_RED: return RED; break;
-	case COLOR_ORANGE: return ORANGE; break;
 	case COLOR_YELLOW: return YELLOW; break;
 	case COLOR_GREEN: return GREEN; break;
 	case COLOR_BLUE: return BLUE; break;
 	case COLOR_VIOLET: return VIOLET; break;
 	case COLOR_WHITE: return WHITE; break;
-	default: return GRAY; break;
+	default: return WHITE; break;
 	}
 }
-void RoyalSocietyOfCirclesApp::setCurrentColor()
-{
-	cur_color_ = sentinel_card_ -> next_ -> color_;
-}
+
 Color8u RoyalSocietyOfCirclesApp::returnColor(int c)
 {
 	switch(c)
 	{
 	case COLOR_RED: return RED; break;
-	case COLOR_ORANGE: return ORANGE; break;
 	case COLOR_YELLOW: return YELLOW; break;
 	case COLOR_GREEN: return GREEN; break;
 	case COLOR_BLUE: return BLUE; break;
 	case COLOR_VIOLET: return VIOLET; break;
 	case COLOR_WHITE: return WHITE; break;
-	default: return GRAY; break;
+	default: return WHITE; break;
 	}
 }
+
+void RoyalSocietyOfCirclesApp::setCurrentColor()
+{
+	cur_color_ = sentinel_card_ -> next_ -> color_;
+}
+
 
 void RoyalSocietyOfCirclesApp::update()
 {
@@ -262,37 +295,57 @@ void RoyalSocietyOfCirclesApp::update()
 void RoyalSocietyOfCirclesApp::draw()
 {
 	// clear out the window with black
-	gl::clear( Color( 0, 0, 0 ) );
+	gl::clear(Color( 0, 0, 0 ));
+
 	Node* temp = sentinel_->prev_node_;
 	Hole* temp2 = sentinel_hole_->prev_;
+	ColorCards* temp3 = sentinel_card_ ->next_;
+
 	while(temp2 != sentinel_hole_)
 	{
 		(*temp2).draw();
 		temp2 = temp2->prev_;
 	}
+
+	temp2 = NULL;
 	while(temp!=sentinel_)
 	{
-		Circle* c = temp->circle_;
-		(*c).update();
 		(*temp).draw(frame_count_);
 		temp = temp->prev_node_;
 	}
-	ColorCards* temp3 = sentinel_card_ ->next_;
-	temp3 -> top_ = true;
+
+	temp = NULL;
+
+	int pos = 0;
 
 	while(temp3!=sentinel_card_)
 	{
+
+		if(cards_have_changed_)
+		{
+			console() << "Has Changed "<< pos << endl;
+			int xPos = kMaxCardWidth*pos;
+			int yBuffer = (kCardBuffer*(pos+1));
+
+			temp3 -> upper_left_x = xPos+kCardBuffer;
+			temp3 -> upper_left_y = kAppHeight-kBottomBuffer+yBuffer;
+			temp3 -> bottom_right_x = xPos+kMaxCardWidth-kCardBuffer;
+			temp3 -> bottom_right_y = kAppHeight-yBuffer;
+		}
+
 		(*temp3).draw();
 		temp3 = temp3 -> next_;
-		temp3 -> top_ = false;
+		pos++;
 	}
 
+	cards_have_changed_ = false;
 	frame_count_++;
-	
-	console() << frame_count_++ << endl;
-	
+
 	if (help_screen)
-		gl::draw(master_texture_font_);
+	{
+		gl::color(Color8u(255,255,255));
+		gl::draw(mTextTexture);
+	}
 }
 
 CINDER_APP_BASIC( RoyalSocietyOfCirclesApp, RendererGl )
