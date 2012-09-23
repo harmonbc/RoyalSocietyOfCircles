@@ -1,3 +1,16 @@
+/**
+*@Author: Brandon Harmon
+*@Date: 24 September, 2012
+*@Assignment: Putting things on top of other things
+*@Summary: Goal for the project is to create lists of objects which can be stacked and drawn from the stack
+*@note This file is (c) 2012. It is licensed under the
+*CC BY 3.0 license (http://creativecommons.org/licenses/by/3.0/),
+*which means you are free to use, share, and remix it as long as you
+*give attribution. Commercial uses are allowed.
+**/
+
+#pragma once
+#include "cinder/CinderResources.h"
 #include "cinder/app/AppBasic.h"
 #include "cinder/gl/gl.h"
 #include "Node.h"
@@ -6,15 +19,6 @@
 #include "ColorCards.h"
 #include "cinder/Text.h"
 #include "cinder/gl/Texture.h"
-
-#define RED		Color8u(255,0,0);
-#define ORANGE	Color8u(255,127,0);
-#define YELLOW	Color8u(255,255,0);
-#define GREEN	Color8u(0,255,0);
-#define BLUE	Color8u(0,0,255);
-#define VIOLET	Color8u(255,0,255);
-#define WHITE	Color8u(255,255,255);
-#define GRAY	Color8u(211,211,211);
 
 using namespace ci;
 using namespace ci::app;
@@ -50,6 +54,18 @@ private:
 	Color8u returnColor(int c);
 	gl::Texture master_texture_font_;
 };
+
+#define RED		Color8u(255,0,0);
+#define ORANGE	Color8u(255,127,0);
+#define YELLOW	Color8u(255,255,0);
+#define GREEN	Color8u(0,255,0);
+#define BLUE	Color8u(0,0,255);
+#define VIOLET	Color8u(255,0,255);
+#define WHITE	Color8u(255,255,255);
+#define GRAY	Color8u(211,211,211);
+
+
+
 static const int kAppWidth=800;
 static const int kAppHeight=600;
 static const int kBottomBuffer=150;
@@ -127,12 +143,13 @@ void RoyalSocietyOfCirclesApp::help(){
 void RoyalSocietyOfCirclesApp::keyDown(KeyEvent event)
 {
 	if(event.getChar() == '1') clearAllNodes();
-	if(event.getChar() == '?') help_screen = !(help_screen); 
-	if(event.getChar() == 'n')
+	else if(event.getChar() == '?') help_screen = !(help_screen); 
+	else if(event.getChar() == 'n')
 	{
 		(*sentinel_card_).cycleDeck(sentinel_card_);
 		setCurrentColor();
 	}
+	else if(event.getChar() == 'r') (*sentinel_card_).reverseList(sentinel_card_); 
 }
 void RoyalSocietyOfCirclesApp::mouseDown( MouseEvent event )
 {
