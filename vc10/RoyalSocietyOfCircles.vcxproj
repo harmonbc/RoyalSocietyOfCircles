@@ -106,14 +106,12 @@
   <ItemGroup>
     <ClCompile Include="..\src\Circle.cpp" />
     <ClCompile Include="..\src\ColorCards.cpp" />
-    <ClCompile Include="..\src\Node.cpp" />
     <ClCompile Include="..\src\RoyalSocietyOfCirclesApp.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\include\Circle.h" />
     <ClInclude Include="..\include\ColorCards.h" />
     <ClInclude Include="..\include\LightColors.h" />
-    <ClInclude Include="..\include\Node.h" />
     <ClInclude Include="..\include\Resources.h" />
   </ItemGroup>
   <ItemGroup>

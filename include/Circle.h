@@ -16,11 +16,20 @@ using namespace ci;
 class Circle
 {
 public:
+	Circle();
 	Circle(Vec2f pos, int radius, Color8u c);
 
 	Vec2f pos_;
 	int radius_;
 	Color8u color_;
+	Circle* next_;
+	Circle* prev_;
+	bool is_hole_;
+	void draw(int frameCount);
+	void update();
 };
-
-bool isInCircle(Circle* circ, Vec2f click);
+	void insertAfter(Circle* insertAfter, Circle* data);
+	void insertAfter(Circle* insertAfter, Circle* curNode);
+	void insertBefore(Circle* insertBefore, Circle* data);
+	void removeNode(Circle* removeThis);
+	bool isInCircle(Circle* circ, Vec2f click);

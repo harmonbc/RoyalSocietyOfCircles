@@ -12,8 +12,7 @@
 #include "cinder/CinderResources.h"
 #include "cinder/app/AppBasic.h"
 #include "cinder/gl/gl.h"
-#include "Node.h"
-#include "Hole.h"
+#include "Circle.h"
 #include "LightColors.h"
 #include "ColorCards.h"
 #include "cinder/Text.h"
@@ -34,7 +33,7 @@ public:
 	void			keyDown(KeyEvent event);
 private:
 	//Lists
-	Node*			sentinel_;
+	Circle*			sentinel_;
 	ColorCards*		sentinel_card_;
 
 	//Actions from mouse/keboard methods
@@ -46,7 +45,7 @@ private:
 
 	//Assist Setup/Actions methods
 	void			addCards();
-	Node*			getTopNode(MouseEvent event);
+	Circle*			getTopNode(MouseEvent event);
 	void			drawHoles();
 	void			setCurrentColor();
 	Color8u			returnColor(LightColors c);
@@ -89,7 +88,7 @@ void RoyalSocietyOfCirclesApp::prepareSettings(Settings* settings)
 
 void RoyalSocietyOfCirclesApp::setup()
 {
-	sentinel_ = new Node();
+	sentinel_ = new Circle();
 	sentinel_card_ = new ColorCards();
 	help_screen = false;
 
@@ -116,9 +115,9 @@ void RoyalSocietyOfCirclesApp::drawHoles()
 			for(int x = 1 ; x < kAppWidth; x++){
 				if(x%kCircleDistance==0)
 				{
-					Circle* c = new Circle(Vec2f(x,y),kCircleRadius, Color8u(0,0,0));
+					Circle* c = new Circle(Vec2f(x,y),kCircleRadius, Color8u(255,255,255));
 					insertAfter(sentinel_, c);
-					sentinel_->next_node_->is_hole_ = true;
+					sentinel_->next_->is_hole_ = true;
 				}
 			}
 			even = !(even);
@@ -182,15 +181,16 @@ void RoyalSocietyOfCirclesApp::mouseDown( MouseEvent event )
 /**Performs user actions**/
 void RoyalSocietyOfCirclesApp::clearAllNodes()
 {
-	Node* curNode = sentinel_->next_node_;
-	Node* temp = sentinel_->next_node_;
+	Circle* curNode = sentinel_->next_;
+	Circle* temp;
 	while(curNode!=sentinel_)
 	{
-		temp = curNode ->next_node_;
+		temp = curNode ->next_;
 		removeNode(curNode);
 		curNode = temp;
 	}
 }
+
 void RoyalSocietyOfCirclesApp::checkCards(MouseEvent event)
 {
 	ColorCards* temp2 = sentinel_card_->next_;
@@ -208,7 +208,7 @@ void RoyalSocietyOfCirclesApp::checkCards(MouseEvent event)
 }
 void RoyalSocietyOfCirclesApp::removeLight(MouseEvent event)
 {
-	Node* highestInside = getTopNode(event);
+	Circle* highestInside = getTopNode(event);
 	if(highestInside!=NULL)
 	{
 		removeNode(highestInside);
@@ -218,38 +218,36 @@ void RoyalSocietyOfCirclesApp::removeLight(MouseEvent event)
 
 void RoyalSocietyOfCirclesApp::editBoard(MouseEvent event)
 {
-	Hole* temp = sentinel_hole_->next_;
-	while(temp!=sentinel_hole_)
+	Circle* circ = sentinel_->next_;
+	int x = event.getX();
+	int y = event.getY();
+	while(circ!=sentinel_)
 	{
-		if((*temp).isInsideHole(Vec2f(event.getX(), event.getY())))
+		if(isInCircle(circ, Vec2f(x, y)))
 		{
-			Circle* c = new Circle(Vec2f((*temp).pos_.x,(*temp).pos_.y), kCircleRadius, sentinel_card_->next_->color_);
+			Circle* c = new Circle(Vec2f(circ->pos_.x, circ->pos_.y), kCircleRadius, sentinel_card_->next_->color_);
 			insertAfter(sentinel_, c);
 			break;
 		}
-		temp = temp -> next_;
+		circ = circ -> next_;
 	}
 	ColorCards* temp2 = sentinel_card_ -> next_;
 
 }
 
-Node* RoyalSocietyOfCirclesApp::getTopNode(MouseEvent event)
+Circle* RoyalSocietyOfCirclesApp::getTopNode(MouseEvent event)
 {
-	Node* temp = sentinel_->prev_node_;
-	Node* highestInside = NULL;
+	Circle* temp = sentinel_->prev_;
+	Circle* highestInside = NULL;
 	Vec2f curClick = Vec2f(event.getX(), event.getY());
 	bool isInside = false;
-	Circle* circ = NULL;
 	while(temp!=sentinel_)
 	{
-		circ = temp->circle_;
-		isInside = isInCircle(circ, curClick);
-
-		if(isInside)
+		if(isInCircle(temp, curClick))
 		{
 			highestInside = temp;
 		}
-		temp = temp->prev_node_;
+		temp = temp->prev_;
 	}
 	return highestInside;
 }
@@ -297,13 +295,13 @@ void RoyalSocietyOfCirclesApp::draw()
 	// clear out the window with black
 	gl::clear(Color( 0, 0, 0 ));
 
-	Node* temp = sentinel_->prev_node_;
+	Circle* temp = sentinel_->prev_;
 	ColorCards* temp3 = sentinel_card_ ->next_;
 
 	while(temp!=sentinel_)
 	{
 		(*temp).draw(frame_count_);
-		temp = temp->prev_node_;
+		temp = temp->prev_;
 	}
 
 	int pos = 0;
