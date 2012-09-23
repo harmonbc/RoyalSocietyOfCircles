@@ -38,6 +38,15 @@ void ColorCards::insertAfter(ColorCards* afterThis, int ulx, int uly, int brx, i
 	temp -> next_ -> prev_ = temp;
 	temp -> prev_ -> next_ = temp;
 }
+void ColorCards::insertAfter(ColorCards* afterThis, ColorCards* thisCard)
+{
+	afterThis -> next_ -> prev_ = thisCard;
+
+	thisCard -> next_ = afterThis -> next_;
+	thisCard -> prev_ = afterThis;
+
+	afterThis -> next_ = thisCard;
+}
 
 void ColorCards::insertBefore(ColorCards* beforeThis, int ulx, int uly, int brx, int bry, Color8u color)
 {
@@ -65,7 +74,7 @@ void ColorCards::reverseList(ColorCards* sentinel)
 		temp->prev_ = temp2;
 		temp = temp2;
 	}while(temp!=sentinel);
-	
+
 }
 void ColorCards::cycleDeck(ColorCards* sentinel)
 {
@@ -80,3 +89,17 @@ void ColorCards::cycleDeck(ColorCards* sentinel)
 
 	temp -> prev_ -> next_ = temp;
 }
+
+void ColorCards::remove(ColorCards* removeThis)
+{
+	removeThis -> prev_ -> next_ = removeThis -> next_;
+	removeThis -> next_ -> prev_ = removeThis -> prev_;
+}
+bool ColorCards::isInside(Vec2f click)
+{
+	if(click.x>upper_left_x&&click.x<bottom_right_x&&click.y>upper_left_y&&bottom_right_y)
+		return true;
+	else
+		return false;
+}
+

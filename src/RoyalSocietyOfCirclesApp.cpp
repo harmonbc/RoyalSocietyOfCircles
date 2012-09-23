@@ -8,8 +8,6 @@
 *which means you are free to use, share, and remix it as long as you
 *give attribution. Commercial uses are allowed.
 **/
-
-#pragma once
 #include "cinder/CinderResources.h"
 #include "cinder/app/AppBasic.h"
 #include "cinder/gl/gl.h"
@@ -63,8 +61,6 @@ private:
 #define VIOLET	Color8u(255,0,255);
 #define WHITE	Color8u(255,255,255);
 #define GRAY	Color8u(211,211,211);
-
-
 
 static const int kAppWidth=800;
 static const int kAppHeight=600;
