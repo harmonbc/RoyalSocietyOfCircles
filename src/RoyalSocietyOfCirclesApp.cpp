@@ -178,7 +178,6 @@ void RoyalSocietyOfCirclesApp::removeLight(MouseEvent event)
 void RoyalSocietyOfCirclesApp::editBoard(MouseEvent event)
 {
 	Hole* temp = sentinel_hole_->next_;
-	Hole* highest= NULL;
 	while(temp!=sentinel_hole_)
 	{
 		if((*temp).isInsideHole(Vec2f(event.getX(), event.getY())))
@@ -188,7 +187,19 @@ void RoyalSocietyOfCirclesApp::editBoard(MouseEvent event)
 			break;
 		}
 		temp = temp -> next_;
-	}	
+	}
+		ColorCards* temp2 = sentinel_card_ -> next_;
+		while(temp2!=sentinel_card_)
+		{
+			if((*temp2).isInside(Vec2f(event.getX(), event.getY())))
+			{
+				(*temp2).remove(temp2);
+				(*sentinel_card_).insertAfter(sentinel_card_, temp2);
+				break;
+			}
+			temp2 = temp2 -> next_;
+		}
+
 }
 
 Node* RoyalSocietyOfCirclesApp::getTopNode(MouseEvent event)
