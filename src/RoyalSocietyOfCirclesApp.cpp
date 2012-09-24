@@ -90,14 +90,14 @@ void RoyalSocietyOfCirclesApp::setup()
 {
 	sentinel_ = new Circle();
 	sentinel_card_ = new ColorCards();
-	help_screen = false;
+	help_screen = true;
 
 	gl::enableAlphaBlending();
 	drawHoles();
 	addCards();
 	setCurrentColor();
 
-	mFont = Font( "Times New Roman", 20 );
+	mFont = Font( "Sans", 30 );
 	mSize = Vec2f( kAppWidth, 100 );
 	render();
 	cards_have_changed_ = true;
@@ -137,19 +137,20 @@ void RoyalSocietyOfCirclesApp::addCards()
 }
 /**
 *Code primarily taken from Cinder example
+*Displays a message on start up that explaines controls. Satisfies Main Goal B(50/70)
 **/
 void RoyalSocietyOfCirclesApp::render()
 {
-	string txt = "LITE BRITE:\nLeft Click inside of a grey circle to add a light";
+	string txt = "WELCOME TO LITE BRITE!\nLeft Click inside of a grey circle to add a light";
 	txt+="\nSelect color either by left clicking on a card or pressing 'n' to cycle through cards\n";
 	txt+="\nRemove light by right clicking it";
-	txt+="\nc=Clears all lights from the board";
-	txt+="\nn=Cycle through colors";
-	txt+="\nr=Reverse the list of colors";
-	txt+="\n?=Toggle Help Screen\n";
-	TextBox tbox = TextBox().alignment( TextBox::RIGHT ).font( mFont ).size( Vec2i( mSize.x, TextBox::GROW ) ).text( txt );
-	tbox.setColor( Color8u(0,0,0) );
-	tbox.setBackgroundColor( Color8u(255,255,255) );
+	txt+="\nc = Clears all lights from the board";
+	txt+="\nn = Cycle through colors";
+	txt+="\nr = Reverse the list of colors";
+	txt+="\n? = Toggle Help Screen\n";
+	TextBox tbox = TextBox().alignment( TextBox::LEFT ).font( mFont ).size( Vec2i( mSize.x, TextBox::GROW ) ).text( txt );
+	tbox.setColor( Color8u(0,0,210) );
+	tbox.setBackgroundColor( Color8u( 105, 105, 105 ) );
 	Vec2i sz = tbox.measure();
 	mTextTexture = gl::Texture( tbox.render() );
 }
@@ -182,12 +183,10 @@ void RoyalSocietyOfCirclesApp::mouseDown( MouseEvent event )
 void RoyalSocietyOfCirclesApp::clearAllNodes()
 {
 	Circle* curNode = sentinel_->next_;
-	Circle* temp;
 	while(curNode!=sentinel_)
 	{
-		temp = curNode ->next_;
-		removeNode(curNode);
-		curNode = temp;
+		curNode ->is_hole_ = true;
+		curNode = curNode->next_;
 	}
 }
 
@@ -208,12 +207,19 @@ void RoyalSocietyOfCirclesApp::checkCards(MouseEvent event)
 }
 void RoyalSocietyOfCirclesApp::removeLight(MouseEvent event)
 {
-	Circle* highestInside = getTopNode(event);
-	if(highestInside!=NULL)
+	Circle* temp = sentinel_ -> next_;
+
+	Vec2f click = Vec2f(event.getX(),event.getY());
+	while(temp!=sentinel_)
 	{
-		removeNode(highestInside);
-		delete highestInside;
+		if(isInCircle(temp, click))
+		{
+			temp ->is_hole_ = true;
+			break;
+		}
+		temp = temp ->next_;
 	}
+	
 }
 
 void RoyalSocietyOfCirclesApp::editBoard(MouseEvent event)
@@ -225,31 +231,14 @@ void RoyalSocietyOfCirclesApp::editBoard(MouseEvent event)
 	{
 		if(isInCircle(circ, Vec2f(x, y)))
 		{
-			Circle* c = new Circle(Vec2f(circ->pos_.x, circ->pos_.y), kCircleRadius, sentinel_card_->next_->color_);
-			insertAfter(sentinel_, c);
+			circ -> color_ = cur_color_;
+			circ ->is_hole_ = false;
 			break;
 		}
 		circ = circ -> next_;
 	}
 	ColorCards* temp2 = sentinel_card_ -> next_;
 
-}
-
-Circle* RoyalSocietyOfCirclesApp::getTopNode(MouseEvent event)
-{
-	Circle* temp = sentinel_->prev_;
-	Circle* highestInside = NULL;
-	Vec2f curClick = Vec2f(event.getX(), event.getY());
-	bool isInside = false;
-	while(temp!=sentinel_)
-	{
-		if(isInCircle(temp, curClick))
-		{
-			highestInside = temp;
-		}
-		temp = temp->prev_;
-	}
-	return highestInside;
 }
 
 Color8u RoyalSocietyOfCirclesApp::returnColor(LightColors c)
@@ -292,11 +281,14 @@ void RoyalSocietyOfCirclesApp::update()
 
 void RoyalSocietyOfCirclesApp::draw()
 {
-	// clear out the window with black
-	gl::clear(Color( 0, 0, 0 ));
+	gl::clear(Color8u( 105, 105, 105 ));
+	Rectf rect(5,5, kAppWidth-5, kAppHeight-kBottomBuffer);
+
+	gl::color(Color8u(0,0,0));
+	gl::drawSolidRect(rect);
 
 	Circle* temp = sentinel_->prev_;
-	ColorCards* temp3 = sentinel_card_ ->next_;
+	ColorCards* temp3 = sentinel_card_ ->prev_;
 
 	while(temp!=sentinel_)
 	{
@@ -311,18 +303,17 @@ void RoyalSocietyOfCirclesApp::draw()
 
 		if(cards_have_changed_)
 		{
-			console() << "Has Changed "<< pos << endl;
-			int xPos = kMaxCardWidth*pos;
-			int yBuffer = (kCardBuffer*(pos+1));
+			int xPosLeft = ((LAST-pos)*kCardBuffer);
+			int yBuffer = (kCardBuffer*((LAST-pos)+1));
 
-			temp3 -> upper_left_x = xPos+kCardBuffer;
-			temp3 -> upper_left_y = kAppHeight-kBottomBuffer+yBuffer;
-			temp3 -> bottom_right_x = xPos+kMaxCardWidth-kCardBuffer;
-			temp3 -> bottom_right_y = kAppHeight-yBuffer;
+			temp3 -> upper_left_x = xPosLeft;
+			temp3 -> upper_left_y = (kAppHeight-kBottomBuffer)+yBuffer;
+			temp3 -> bottom_right_x = xPosLeft+kMaxCardWidth-kCardBuffer;
+			temp3 -> bottom_right_y = (temp3 -> upper_left_y)+100;
 		}
 
 		(*temp3).draw();
-		temp3 = temp3 -> next_;
+		temp3 = temp3 -> prev_;
 		pos++;
 	}
 

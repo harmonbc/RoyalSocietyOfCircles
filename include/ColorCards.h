@@ -27,12 +27,15 @@ public:
 	Color8u color_;
 	bool top_;
 
+	//Cards are stacked as in a deck style, satisfies Main Goal H(70/70)
 	void draw();
 	bool isInside(Vec2f click);
 };
 	void insertAfter(ColorCards* afterThis,Color8u color);
 	void insertAfter(ColorCards* afterThis, ColorCards* thisCard);
 	void insertBefore(ColorCards* beforeThis, Color8u color);
+	//User alters list through input, Satisfies Main Goal C(50/70)
 	void cycleDeck(ColorCards* sentinel);
+	//User can reverse list with keyboard input, Satisfies Main Goal E(60/70)
 	void reverseList(ColorCards* sentinel);
 	void remove(ColorCards* thisCard);

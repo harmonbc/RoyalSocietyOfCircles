@@ -28,15 +28,19 @@ void Circle::draw(int frameCount)
 {
 	if(is_hole_)
 	{
-		gl::color(Color8u(111,111,111));
-		gl::drawSolidCircle(pos_, radius_);
+		gl::color(Color8u(55,55,55));
+		gl::drawSolidCircle(pos_, radius_-3);
 	}
 	else
 	{
 		gl::color(ColorA(color_.r, color_.g, color_.b, .25f));
-		gl::drawSolidCircle(pos_, radius_-5+sin(frameCount/2.0)*4);
+		gl::drawSolidCircle(pos_, radius_-2+sin(frameCount*.1)*2);
+
+		gl::color(ColorA(color_.r, color_.g, color_.b, .5f));
+		gl::drawSolidCircle(pos_, radius_*.75);
+
 		gl::color(color_);
-		gl::drawSolidCircle(pos_, radius_/2);
+		gl::drawSolidCircle(pos_, radius_*.25);
 	}
 }
 void insertAfter(Circle* insertAfter, Circle* data)

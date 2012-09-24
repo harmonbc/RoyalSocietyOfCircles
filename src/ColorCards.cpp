@@ -11,6 +11,7 @@
 #include "ColorCards.h"
 #include "cinder\gl\gl.h"
 
+//Circluar doubly linked list Satisfies A (30/70)
 ColorCards::ColorCards()
 {
 	next_ = prev_ = this;
@@ -70,7 +71,6 @@ void reverseList(ColorCards* sentinel)
 	}while(temp!=sentinel);
 
 }
-
 void cycleDeck(ColorCards* sentinel)
 {
 	ColorCards* temp = sentinel -> next_;
