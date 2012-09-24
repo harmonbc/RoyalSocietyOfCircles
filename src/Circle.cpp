@@ -14,7 +14,8 @@
 Circle::Circle()
 {
 	next_=prev_=this;
-	is_hole_ = false;
+	//By default new circles will be holes and not pegs
+	is_hole_ = true;
 }
 Circle::Circle(Vec2f pos, int radius, Color8u c)
 {
@@ -22,7 +23,8 @@ Circle::Circle(Vec2f pos, int radius, Color8u c)
 	pos_ = pos;
 	radius_ = radius;
 	color_ = c;
-	is_hole_ = false;
+	//By default new circles will be holes and not pegs
+	is_hole_ = true;
 }
 void Circle::draw(int frameCount)
 {
@@ -33,6 +35,7 @@ void Circle::draw(int frameCount)
 	}
 	else
 	{
+		//This layer adds the glowing animation to the lights using transparency
 		gl::color(ColorA(color_.r, color_.g, color_.b, .25f));
 		gl::drawSolidCircle(pos_, radius_-2+sin(frameCount*.1)*2);
 

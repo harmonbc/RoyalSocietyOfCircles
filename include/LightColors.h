@@ -9,6 +9,9 @@
 *which means you are free to use, share, and remix it as long as you
 *give attribution. Commercial uses are allowed.
 **/
+
+//This is used to enumerate the possible color possibilities
+//LAST is used as a sentinel.
 static enum LightColors {
 	COLOR_RED, COLOR_YELLOW, COLOR_GREEN,
 	COLOR_BLUE, COLOR_VIOLET,COLOR_WHITE, LAST

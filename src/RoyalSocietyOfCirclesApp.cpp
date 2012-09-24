@@ -57,7 +57,7 @@ private:
 	Vec2f			mSize;
 	Font			mFont;
 };
-
+//Defines the colors used in the glowing pegs.
 #define RED			Color8u(255,0,0);
 #define YELLOW		Color8u(255,255,0);
 #define GREEN		Color8u(0,255,0);
@@ -67,10 +67,10 @@ private:
 
 static const int	kAppWidth=800;
 static const int	kAppHeight=600;
+//This will be the area where the cards are hel
 static const int	kBottomBuffer=150;
 static const float	kCircleRadius= 8;
-static const int	kCircleDistance= 20;
-static const int	kTextureSize=1024;
+static const int	kCircleDistance= (kCircleRadius*2)+2;
 static const int 	kMaxCardWidth = (kAppWidth/LAST);
 static const int	kCardBuffer = 5;
 
@@ -115,9 +115,11 @@ void RoyalSocietyOfCirclesApp::drawHoles()
 			for(int x = 1 ; x < kAppWidth; x++){
 				if(x%kCircleDistance==0)
 				{
-					Circle* c = new Circle(Vec2f(x,y),kCircleRadius, Color8u(255,255,255));
+					if((!even&&x+(kCircleRadius*2)+5<kAppWidth)||(even&&(x+(kCircleDistance/2)<kAppWidth-5)))
+					{
+					Circle* c = new Circle(Vec2f((even) ? x : (x+(kCircleDistance/2)),y),kCircleRadius, Color8u(255,255,255));
 					insertAfter(sentinel_, c);
-					sentinel_->next_->is_hole_ = true;
+					}
 				}
 			}
 			even = !(even);
@@ -154,7 +156,6 @@ void RoyalSocietyOfCirclesApp::render()
 	Vec2i sz = tbox.measure();
 	mTextTexture = gl::Texture( tbox.render() );
 }
-
 /**Listens for Actions**/
 void RoyalSocietyOfCirclesApp::keyDown(KeyEvent event)
 {
@@ -198,6 +199,7 @@ void RoyalSocietyOfCirclesApp::checkCards(MouseEvent event)
 		if((*temp2).isInside(Vec2f(event.getX(), event.getY())))
 		{
 			remove(temp2);
+			cur_color_ = temp2 ->color_;
 			insertAfter(sentinel_card_, temp2);
 			cards_have_changed_ = true;
 			break;
@@ -289,18 +291,18 @@ void RoyalSocietyOfCirclesApp::draw()
 
 	Circle* temp = sentinel_->prev_;
 	ColorCards* temp3 = sentinel_card_ ->prev_;
-
+	//Draw all circles(holes/pegs)
 	while(temp!=sentinel_)
 	{
 		(*temp).draw(frame_count_);
 		temp = temp->prev_;
 	}
 
+	//Draws all cards
 	int pos = 0;
-
 	while(temp3!=sentinel_card_)
 	{
-
+		//Update cards if user has changed the order
 		if(cards_have_changed_)
 		{
 			int xPosLeft = ((LAST-pos)*kCardBuffer);
