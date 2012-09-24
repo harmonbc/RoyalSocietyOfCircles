@@ -10,7 +10,6 @@
 **/
 
 #include "Circle.h"
-#include "Node.h"
 Circle::Circle()
 {
 	next_=prev_=this;
@@ -41,6 +40,9 @@ void Circle::draw(int frameCount)
 
 		gl::color(ColorA(color_.r, color_.g, color_.b, .5f));
 		gl::drawSolidCircle(pos_, radius_*.75);
+
+		gl::color(ColorA(color_.r, color_.g, color_.b, .75f));
+		gl::drawSolidCircle(pos_, radius_*.5);
 
 		gl::color(color_);
 		gl::drawSolidCircle(pos_, radius_*.25);

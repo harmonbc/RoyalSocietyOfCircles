@@ -58,12 +58,13 @@ private:
 	Font			mFont;
 };
 //Defines the colors used in the glowing pegs.
-#define RED			Color8u(255,0,0);
-#define YELLOW		Color8u(255,255,0);
-#define GREEN		Color8u(0,255,0);
-#define BLUE		Color8u(0,0,255);
-#define VIOLET		Color8u(255,0,255);
-#define WHITE		Color8u(255,255,255);
+#define RED			Color8u(255,0,0)
+#define YELLOW		Color8u(255,255,0)
+#define GREEN		Color8u(0,255,0)
+#define BLUE		Color8u(0,0,255)
+#define VIOLET		Color8u(255,0,255)
+#define WHITE		Color8u(255,255,255)
+#define BLACK		Color8u(0,0,0)
 
 static const int	kAppWidth=800;
 static const int	kAppHeight=600;
@@ -113,12 +114,15 @@ void RoyalSocietyOfCirclesApp::drawHoles()
 		if(y%kCircleDistance==0)
 		{
 			for(int x = 1 ; x < kAppWidth; x++){
+
 				if(x%kCircleDistance==0)
 				{
+					//Check for boarders
 					if((!even&&x+(kCircleRadius*2)+5<kAppWidth)||(even&&(x+(kCircleDistance/2)<kAppWidth-5)))
 					{
-					Circle* c = new Circle(Vec2f((even) ? x : (x+(kCircleDistance/2)),y),kCircleRadius, Color8u(255,255,255));
-					insertAfter(sentinel_, c);
+						//All odd rows will be offset by 1/2 the regular distance
+						Circle* c = new Circle(Vec2f((even) ? x : (x+(kCircleDistance/2)),y),kCircleRadius, WHITE);
+						insertAfter(sentinel_, c);
 					}
 				}
 			}
@@ -151,7 +155,7 @@ void RoyalSocietyOfCirclesApp::render()
 	txt+="\nr = Reverse the list of colors";
 	txt+="\n? = Toggle Help Screen\n";
 	TextBox tbox = TextBox().alignment( TextBox::LEFT ).font( mFont ).size( Vec2i( mSize.x, TextBox::GROW ) ).text( txt );
-	tbox.setColor( Color8u(0,0,210) );
+	tbox.setColor( BLUE );
 	tbox.setBackgroundColor( Color8u( 105, 105, 105 ) );
 	Vec2i sz = tbox.measure();
 	mTextTexture = gl::Texture( tbox.render() );
@@ -194,9 +198,11 @@ void RoyalSocietyOfCirclesApp::clearAllNodes()
 void RoyalSocietyOfCirclesApp::checkCards(MouseEvent event)
 {
 	ColorCards* temp2 = sentinel_card_->next_;
+
+	Vec2f pos = Vec2f(event.getX(),event.getY());
 	while(temp2!=sentinel_card_)
 	{
-		if((*temp2).isInside(Vec2f(event.getX(), event.getY())))
+		if((*temp2).isInside(pos))
 		{
 			remove(temp2);
 			cur_color_ = temp2 ->color_;
@@ -221,7 +227,7 @@ void RoyalSocietyOfCirclesApp::removeLight(MouseEvent event)
 		}
 		temp = temp ->next_;
 	}
-	
+
 }
 
 void RoyalSocietyOfCirclesApp::editBoard(MouseEvent event)
@@ -286,7 +292,7 @@ void RoyalSocietyOfCirclesApp::draw()
 	gl::clear(Color8u( 105, 105, 105 ));
 	Rectf rect(5,5, kAppWidth-5, kAppHeight-kBottomBuffer);
 
-	gl::color(Color8u(0,0,0));
+	gl::color(BLACK);
 	gl::drawSolidRect(rect);
 
 	Circle* temp = sentinel_->prev_;
@@ -324,7 +330,7 @@ void RoyalSocietyOfCirclesApp::draw()
 
 	if (help_screen)
 	{
-		gl::color(Color8u(255,255,255));
+		gl::color(WHITE);
 		gl::draw(mTextTexture);
 	}
 }
