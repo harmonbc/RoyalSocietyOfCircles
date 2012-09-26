@@ -33,7 +33,7 @@ public:
 	void			keyDown(KeyEvent event);
 private:
 	//Lists
-	Circle*			sentinel_;
+	Circle*			sentinel_; 
 	ColorCards*		sentinel_card_;
 
 	//Actions from mouse/keboard methods
@@ -163,15 +163,15 @@ void RoyalSocietyOfCirclesApp::render()
 /**Listens for Actions**/
 void RoyalSocietyOfCirclesApp::keyDown(KeyEvent event)
 {
-	if(event.getChar() == 'c') clearAllNodes();
+	if(event.getCode() == event.KEY_c) clearAllNodes();
 	else if(event.getChar() == '?') help_screen = !(help_screen); 
-	else if(event.getChar() == 'n')
+	else if(event.getCode() == event.KEY_n) //changed to get code instead of the character
 	{
 		cycleDeck(sentinel_card_);
 		setCurrentColor();
 		cards_have_changed_ = true;
 	}
-	else if(event.getChar() == 'r')
+	else if(event.getCode() == event.KEY_r)
 	{
 		reverseList(sentinel_card_); 
 		cards_have_changed_ = true;
@@ -194,6 +194,7 @@ void RoyalSocietyOfCirclesApp::clearAllNodes()
 		curNode = curNode->next_;
 	}
 }
+
 
 void RoyalSocietyOfCirclesApp::checkCards(MouseEvent event)
 {
