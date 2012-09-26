@@ -42,6 +42,7 @@ private:
 	void			bringToFront(MouseEvent event);
 	void			removeLight(MouseEvent event);
 	void			clearAllNodes();
+	void            drawCards();
 
 	//Assist Setup/Actions methods
 	void			addCards();
@@ -283,29 +284,11 @@ void RoyalSocietyOfCirclesApp::setCurrentColor()
 	cur_color_ = sentinel_card_ -> next_ -> color_;
 }
 
+//Raquel - Added to clean up the draw method a little
+void RoyalSocietyOfCirclesApp::drawCards(){
 
-void RoyalSocietyOfCirclesApp::update()
-{
-}
+ColorCards* temp3 = sentinel_card_ ->prev_;
 
-void RoyalSocietyOfCirclesApp::draw()
-{
-	gl::clear(Color8u( 105, 105, 105 ));
-	Rectf rect(5,5, kAppWidth-5, kAppHeight-kBottomBuffer);
-
-	gl::color(BLACK);
-	gl::drawSolidRect(rect);
-
-	Circle* temp = sentinel_->prev_;
-	ColorCards* temp3 = sentinel_card_ ->prev_;
-	//Draw all circles(holes/pegs)
-	while(temp!=sentinel_)
-	{
-		(*temp).draw(frame_count_);
-		temp = temp->prev_;
-	}
-
-	//Draws all cards
 	int pos = 0;
 	while(temp3!=sentinel_card_)
 	{
@@ -326,7 +309,35 @@ void RoyalSocietyOfCirclesApp::draw()
 		pos++;
 	}
 
+	
 	cards_have_changed_ = false;
+
+}
+
+void RoyalSocietyOfCirclesApp::update()
+{
+}
+
+void RoyalSocietyOfCirclesApp::draw()
+{
+	gl::clear(Color8u( 105, 105, 105 ));
+	Rectf rect(5,5, kAppWidth-5, kAppHeight-kBottomBuffer);
+
+	gl::color(BLACK);
+	gl::drawSolidRect(rect);
+
+	Circle* temp = sentinel_->prev_;
+	//Draw all circles(holes/pegs)
+	while(temp!=sentinel_)
+	{
+		(*temp).draw(frame_count_);
+		temp = temp->prev_;
+	}
+
+	//Draws all cards
+
+	drawCards();
+
 	frame_count_++;
 
 	if (help_screen)
