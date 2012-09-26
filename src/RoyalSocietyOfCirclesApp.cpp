@@ -284,7 +284,7 @@ void RoyalSocietyOfCirclesApp::setCurrentColor()
 	cur_color_ = sentinel_card_ -> next_ -> color_;
 }
 
-//Raquel - Added to clean up the draw method a little
+//Added to clean up the draw method a little - Raquel
 void RoyalSocietyOfCirclesApp::drawCards(){
 
 ColorCards* temp3 = sentinel_card_ ->prev_;
@@ -335,7 +335,6 @@ void RoyalSocietyOfCirclesApp::draw()
 	}
 
 	//Draws all cards
-
 	drawCards();
 
 	frame_count_++;
