@@ -14,7 +14,7 @@
 *consistant throughout play. If circle is set to is_hole_ it will display as a gray circle, otherwise it will
 *glow with the specified circle.
 **/
-#pragma once
+
 #include "cinder/gl/gl.h"
 
 using namespace ci;

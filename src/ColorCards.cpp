@@ -8,6 +8,7 @@
 *which means you are free to use, share, and remix it as long as you
 *give attribution. Commercial uses are allowed.
 **/
+
 #include "ColorCards.h"
 #include "cinder\gl\gl.h"
 
